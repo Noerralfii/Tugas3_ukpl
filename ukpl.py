@@ -76,64 +76,102 @@ def reset_form():
         var.set(0)
 
 def show_about():
-    messagebox.showinfo("Tentang", "Aplikasi Diagnosa Penyakit Hewan v1.0\nProgram ini dibuat untuk membantu mendiagnosa penyakit pada hewan peliharaan seperti kucing dan anjing.\n\nPengembang:ahli klimatologi\nEmail:ari@gmail.com")
+    messagebox.showinfo("Tentang", "Aplikasi Diagnosa Penyakit Hewan v1.0\nProgram ini dibuat untuk membantu mendiagnosa penyakit pada hewan peliharaan seperti kucing dan anjing.\n\nPengembang: ahli klimatologi\nEmail: ari@gmail.com")
 
-# GUI setup
-root = tk.Tk()
-root.title("Diagnosa Penyakit Kucing & Anjing")
-root.geometry("550x720")
+# ================================
+# ========== LOGIN UI ===========
+# ================================
+def login():
+    username = entry_user.get()
+    password = entry_pass.get()
+    if username == "213" and password == "213":
+        login_window.destroy()
+        main_app()
+    else:
+        messagebox.showerror("Login Gagal", "Username atau Password salah")
 
-# Menu bar
-menu_bar = tk.Menu(root)
-help_menu = tk.Menu(menu_bar, tearoff=0)
-help_menu.add_command(label="Tentang", command=show_about)
-menu_bar.add_cascade(label="Bantuan", menu=help_menu)
-root.config(menu=menu_bar)
+login_window = tk.Tk()
+login_window.title("Login")
+login_window.geometry("300x200")
 
-judul = tk.Label(root, text=" Diagnosa Penyakit Hewan Kucing dan Anjing", font=("Arial", 14, "bold"))
-judul.pack(pady=10)
+lbl_login = tk.Label(login_window, text="Login Aplikasi Diagnosa", font=("Arial", 12, "bold"))
+lbl_login.pack(pady=10)
 
-frame_info = tk.Frame(root)
-frame_info.pack(pady=5)
+frame_login = tk.Frame(login_window)
+frame_login.pack()
 
-lbl_nama = tk.Label(frame_info, text="Nama Hewan:")
-lbl_nama.grid(row=0, column=0, sticky='w')
-entry_nama = tk.Entry(frame_info, width=30)
-entry_nama.grid(row=0, column=1, padx=5)
+tk.Label(frame_login, text="Username:").grid(row=0, column=0, sticky="w")
+entry_user = tk.Entry(frame_login)
+entry_user.grid(row=0, column=1, pady=5)
 
-lbl_jenis = tk.Label(frame_info, text="Jenis Hewan:")
-lbl_jenis.grid(row=1, column=0, sticky='w')
-combo_jenis = ttk.Combobox(frame_info, values=["Kucing", "Anjing"], state="readonly", width=27)
-combo_jenis.grid(row=1, column=1, padx=5)
+tk.Label(frame_login, text="Password:").grid(row=1, column=0, sticky="w")
+entry_pass = tk.Entry(frame_login, show="*")
+entry_pass.grid(row=1, column=1, pady=5)
 
-lbl_gejala = tk.Label(root, text="Pilih Gejala yang Dialami:", font=("Arial", 12))
-lbl_gejala.pack(pady=10)
+btn_login = tk.Button(login_window, text="Login", command=login, bg="orange")
+btn_login.pack(pady=10)
 
-frame_gejala = tk.Frame(root)
-frame_gejala.pack()
+# ================================
+# ========== MAIN GUI ===========
+# ================================
+def main_app():
+    global entry_nama, combo_jenis, gejala_vars, output_text, text_riwayat
 
-gejala_list = list(set(g for gejala in penyakit_db.values() for g in gejala))
-gejala_list.sort()
-gejala_vars = {}
+    root = tk.Tk()
+    root.title("Diagnosa Penyakit Kucing & Anjing")
+    root.geometry("550x720")
 
-# Gejala dalam 2 kolom
-for idx, gejala in enumerate(gejala_list):
-    var = tk.IntVar()
-    cb = tk.Checkbutton(frame_gejala, text=gejala, variable=var)
-    cb.grid(row=idx // 2, column=idx % 2, sticky='w', padx=5, pady=2)
-    gejala_vars[gejala] = var
+    menu_bar = tk.Menu(root)
+    help_menu = tk.Menu(menu_bar, tearoff=0)
+    help_menu.add_command(label="Tentang", command=show_about)
+    menu_bar.add_cascade(label="Bantuan", menu=help_menu)
+    root.config(menu=menu_bar)
 
-tombol = tk.Button(root, text="Diagnosa", command=proses_diagnosa, bg="orange")
-tombol.pack(pady=10)
+    judul = tk.Label(root, text=" Diagnosa Penyakit Hewan Kucing dan Anjing", font=("Arial", 14, "bold"))
+    judul.pack(pady=10)
 
-output_text = tk.StringVar()
-output_label = tk.Label(root, textvariable=output_text, wraplength=450, justify="left", font=("Arial", 12), fg="blue")
-output_label.pack(pady=10)
+    frame_info = tk.Frame(root)
+    frame_info.pack(pady=5)
 
-frame_riwayat = tk.LabelFrame(root, text="Riwayat Diagnosa", font=("Arial", 11))
-frame_riwayat.pack(fill="both", expand=True, padx=10, pady=10)
+    lbl_nama = tk.Label(frame_info, text="Nama Hewan:")
+    lbl_nama.grid(row=0, column=0, sticky='w')
+    entry_nama = tk.Entry(frame_info, width=30)
+    entry_nama.grid(row=0, column=1, padx=5)
 
-text_riwayat = tk.Text(frame_riwayat, height=10, wrap="word")
-text_riwayat.pack(fill="both", expand=True, padx=5, pady=5)
+    lbl_jenis = tk.Label(frame_info, text="Jenis Hewan:")
+    lbl_jenis.grid(row=1, column=0, sticky='w')
+    combo_jenis = ttk.Combobox(frame_info, values=["Kucing", "Anjing"], state="readonly", width=27)
+    combo_jenis.grid(row=1, column=1, padx=5)
 
-root.mainloop()
+    lbl_gejala = tk.Label(root, text="Pilih Gejala yang Dialami:", font=("Arial", 12))
+    lbl_gejala.pack(pady=10)
+
+    frame_gejala = tk.Frame(root)
+    frame_gejala.pack()
+
+    gejala_list = list(set(g for gejala in penyakit_db.values() for g in gejala))
+    gejala_list.sort()
+    gejala_vars = {}
+
+    for idx, gejala in enumerate(gejala_list):
+        var = tk.IntVar()
+        cb = tk.Checkbutton(frame_gejala, text=gejala, variable=var)
+        cb.grid(row=idx // 2, column=idx % 2, sticky='w', padx=5, pady=2)
+        gejala_vars[gejala] = var
+
+    tombol = tk.Button(root, text="Diagnosa", command=proses_diagnosa, bg="orange")
+    tombol.pack(pady=10)
+
+    output_text = tk.StringVar()
+    output_label = tk.Label(root, textvariable=output_text, wraplength=450, justify="left", font=("Arial", 12), fg="blue")
+    output_label.pack(pady=10)
+
+    frame_riwayat = tk.LabelFrame(root, text="Riwayat Diagnosa", font=("Arial", 11))
+    frame_riwayat.pack(fill="both", expand=True, padx=10, pady=10)
+
+    text_riwayat = tk.Text(frame_riwayat, height=10, wrap="word")
+    text_riwayat.pack(fill="both", expand=True, padx=5, pady=5)
+
+    root.mainloop()
+
+login_window.mainloop()
